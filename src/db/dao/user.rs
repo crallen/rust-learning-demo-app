@@ -24,4 +24,18 @@ impl UserDao {
             .fetch_one(self.pool.as_ref())
             .await
     }
+
+    pub async fn insert(&self, user: User) -> Result<User> {
+        sqlx::query_as::<_, User>(
+            r#"
+            INSERT INTO users (username, password)
+            VALUES ($1, $2)
+            RETURNING id, username, password, created_at, updated_at
+            "#,
+        )
+        .bind(user.username)
+        .bind(user.password)
+        .fetch_one(self.pool.as_ref())
+        .await
+    }
 }

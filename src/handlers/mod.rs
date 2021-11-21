@@ -1,3 +1,4 @@
+mod models;
 mod roles;
 mod users;
 
@@ -15,7 +16,8 @@ pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/users")
             .service(users::list_users)
-            .service(users::show_user),
+            .service(users::show_user)
+            .service(users::create_user),
     );
 }
 

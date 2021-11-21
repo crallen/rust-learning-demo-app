@@ -33,6 +33,10 @@ do
     down)
       SQLX_COMMAND="migrate revert"
       ;;
+
+    reset)
+      SQLX_COMMAND="database reset"
+      ;;
   esac
   shift
 done
