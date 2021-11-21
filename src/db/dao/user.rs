@@ -9,7 +9,7 @@ pub struct UserDao {
 
 impl UserDao {
     pub fn new(pool: Arc<Pool<Postgres>>) -> Self {
-        UserDao { pool: pool.clone() }
+        UserDao { pool }
     }
 
     pub async fn find_all(&self) -> Result<Vec<User>> {

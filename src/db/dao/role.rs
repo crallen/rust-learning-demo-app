@@ -9,7 +9,7 @@ pub struct RoleDao {
 
 impl RoleDao {
     pub fn new(pool: Arc<Pool<Postgres>>) -> Self {
-        RoleDao { pool: pool.clone() }
+        RoleDao { pool }
     }
 
     pub async fn find_all(&self) -> Result<Vec<Role>> {
