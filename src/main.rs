@@ -1,6 +1,6 @@
 mod config;
-mod handlers;
 mod db;
+mod handlers;
 
 #[macro_use]
 extern crate log;

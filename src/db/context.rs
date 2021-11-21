@@ -1,10 +1,11 @@
-use std::sync::Arc;
 use sqlx::postgres::PgPoolOptions;
+use std::sync::Arc;
 
 use crate::config::Config;
-use crate::db::dao::UserDao;
+use crate::db::dao::{RoleDao, UserDao};
 
 pub struct DbContext {
+    pub roles: RoleDao,
     pub users: UserDao,
 }
 
@@ -18,7 +19,8 @@ impl DbContext {
         let pool = Arc::new(pool);
 
         Ok(DbContext {
-            users: UserDao::new(pool)
+            roles: RoleDao::new(pool.clone()),
+            users: UserDao::new(pool.clone()),
         })
     }
 }

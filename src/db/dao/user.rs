@@ -1,17 +1,15 @@
-use std::sync::Arc;
 use sqlx::{Pool, Postgres, Result};
+use std::sync::Arc;
 
 use crate::db::entities::User;
 
 pub struct UserDao {
-    pool: Arc<Pool<Postgres>>
+    pool: Arc<Pool<Postgres>>,
 }
 
 impl UserDao {
     pub fn new(pool: Arc<Pool<Postgres>>) -> Self {
-        UserDao {
-            pool: pool.clone()
-        }
+        UserDao { pool: pool.clone() }
     }
 
     pub async fn find_all(&self) -> Result<Vec<User>> {

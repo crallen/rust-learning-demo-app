@@ -1,9 +1,16 @@
+mod roles;
 mod users;
 
 use actix_web::{get, web, HttpResponse, Responder};
 
 pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(ready);
+
+    cfg.service(
+        web::scope("/roles")
+            .service(roles::list_roles)
+            .service(roles::show_role),
+    );
 
     cfg.service(
         web::scope("/users")
