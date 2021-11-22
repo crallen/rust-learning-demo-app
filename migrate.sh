@@ -2,6 +2,26 @@
 
 set -euo pipefail
 
+function print_help() {
+  echo "Utility to manage the database and migrations"
+  echo
+  echo "Usage: ./migrate.sh [options] <command>"
+  echo
+  echo "Commands:"
+  echo "  init          Creates the database and runs all pending migrations"
+  echo "  new <name>    Creates new up/down migration files with the name specified"
+  echo "  up            Runs all pending migrations"
+  echo "  down          Reverts the latest migration"
+  echo "  reset         Destroys the database, re-creates it, and runs all pending migrations"
+  echo
+  echo "Options:"
+  echo "  -h --help     Prints this help text"
+}
+
+function error() {
+    echo -e "\033[0;31m$1\033[0m" >&2
+}
+
 if [[ -f ".env" ]]; then
   source ".env"
 fi
@@ -36,6 +56,16 @@ do
 
     reset)
       SQLX_COMMAND="database reset"
+      ;;
+
+    -h|--help)
+      print_help
+      exit 0
+      ;;
+
+    *)
+      error "Unrecognized argument: $1"
+      exit 1
       ;;
   esac
   shift
