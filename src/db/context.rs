@@ -13,7 +13,7 @@ impl DbContext {
     pub async fn new(cfg: Config) -> Result<Self, sqlx::Error> {
         let pool = PgPoolOptions::new()
             .max_connections(cfg.pool_size)
-            .connect(cfg.database_url.as_str())
+            .connect(cfg.database_url().as_str())
             .await?;
 
         let pool = Arc::new(pool);
