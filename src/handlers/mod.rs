@@ -17,7 +17,8 @@ pub fn init(cfg: &mut web::ServiceConfig) {
         web::scope("/users")
             .service(users::list_users)
             .service(users::show_user)
-            .service(users::create_user),
+            .service(users::create_user)
+            .service(users::delete_user),
     );
 }
 

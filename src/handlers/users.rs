@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, HttpRequest, HttpResponse};
+use actix_web::{delete, get, post, web, HttpRequest, HttpResponse};
 
 use crate::db::entities::UserBuilder;
 use crate::db::DbContext;
@@ -62,6 +62,25 @@ pub async fn create_user(
 
         Err(e) => {
             error!("failed to create user: {:?}", e);
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
+
+#[delete("/{id}")]
+pub async fn delete_user(req: HttpRequest, db: web::Data<DbContext>) -> HttpResponse {
+    let id = req.match_info().get("id").unwrap();
+
+    match db.users.delete(id).await {
+        Ok(result) => {
+            if result.rows_affected() == 0 {
+                return HttpResponse::NotFound().finish();
+            }
+            HttpResponse::NoContent().finish()
+        }
+
+        Err(e) => {
+            error!("failed to delete user: {:?}", e);
             HttpResponse::InternalServerError().finish()
         }
     }

@@ -1,3 +1,4 @@
+use sqlx::postgres::PgQueryResult;
 use sqlx::{Pool, Postgres, Result};
 use std::sync::Arc;
 
@@ -13,13 +14,13 @@ impl UserDao {
     }
 
     pub async fn find_all(&self) -> Result<Vec<User>> {
-        sqlx::query_as::<_, User>("SELECT * FROM users")
+        sqlx::query_as::<_, User>("SELECT * FROM users WHERE is_deleted = FALSE")
             .fetch_all(self.pool.as_ref())
             .await
     }
 
     pub async fn find_one(&self, id: &str) -> Result<User> {
-        sqlx::query_as::<_, User>("SELECT * FROM users WHERE id::text = $1")
+        sqlx::query_as::<_, User>("SELECT * FROM users WHERE id::text = $1 AND is_deleted = FALSE")
             .bind(id)
             .fetch_one(self.pool.as_ref())
             .await
@@ -36,6 +37,18 @@ impl UserDao {
         .bind(user.username)
         .bind(user.password)
         .fetch_one(self.pool.as_ref())
+        .await
+    }
+
+    pub async fn delete(&self, id: &str) -> Result<PgQueryResult> {
+        sqlx::query(
+            r#"
+            UPDATE users SET is_deleted = TRUE, updated_at = now()
+            WHERE id::text = $1
+            "#,
+        )
+        .bind(id)
+        .execute(self.pool.as_ref())
         .await
     }
 }
