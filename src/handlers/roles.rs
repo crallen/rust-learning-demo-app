@@ -2,14 +2,14 @@ use actix_web::web::Data;
 use actix_web::{get, HttpRequest, HttpResponse};
 
 use crate::db::DbContext;
-use crate::handlers::models::ListResult;
+use crate::dto::ListResultDto;
 
 #[get("")]
 pub async fn list_roles(db: Data<DbContext>) -> HttpResponse {
     match db.roles.find_all().await {
         Ok(roles) => HttpResponse::Ok()
             .content_type("application/json")
-            .body(serde_json::to_string(&ListResult::new(roles)).unwrap()),
+            .body(serde_json::to_string(&ListResultDto::new(roles)).unwrap()),
 
         Err(e) => {
             error!("failed to fetch role list: {:?}", e);

@@ -2,14 +2,14 @@ use actix_web::{delete, get, post, web, HttpRequest, HttpResponse};
 
 use crate::db::entities::UserBuilder;
 use crate::db::DbContext;
-use crate::handlers::models::{CreateUserRequest, ListResult};
+use crate::dto::{CreateUserDto, ListResultDto};
 
 #[get("")]
 pub async fn list_users(db: web::Data<DbContext>) -> HttpResponse {
     match db.users.find_all().await {
         Ok(users) => HttpResponse::Ok()
             .content_type("application/json")
-            .body(serde_json::to_string(&ListResult::new(users)).unwrap()),
+            .body(serde_json::to_string(&ListResultDto::new(users)).unwrap()),
 
         Err(e) => {
             error!("failed to fetch user list: {:?}", e);
@@ -40,7 +40,7 @@ pub async fn show_user(req: HttpRequest, db: web::Data<DbContext>) -> HttpRespon
 
 #[post("")]
 pub async fn create_user(
-    model: web::Json<CreateUserRequest>,
+    model: web::Json<CreateUserDto>,
     db: web::Data<DbContext>,
 ) -> HttpResponse {
     let user = match UserBuilder::new()

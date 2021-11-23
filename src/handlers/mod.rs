@@ -1,4 +1,3 @@
-mod models;
 mod roles;
 mod users;
 
