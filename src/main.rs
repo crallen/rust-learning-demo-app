@@ -1,7 +1,8 @@
 mod config;
 mod db;
-mod handlers;
 mod dto;
+mod handlers;
+mod utils;
 
 #[macro_use]
 extern crate log;
@@ -14,6 +15,8 @@ use dotenv::dotenv;
 use env_logger::Env;
 
 use crate::db::DbContext;
+
+pub use crate::utils::{IdentityError, Result};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

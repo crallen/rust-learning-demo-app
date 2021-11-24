@@ -1,6 +1,6 @@
 use actix_web::{delete, get, post, web, HttpRequest, HttpResponse};
 
-use crate::db::entities::UserBuilder;
+use crate::db::entities::User;
 use crate::db::DbContext;
 use crate::dto::{CreateUserDto, ListResultDto};
 
@@ -39,15 +39,8 @@ pub async fn show_user(req: HttpRequest, db: web::Data<DbContext>) -> HttpRespon
 }
 
 #[post("")]
-pub async fn create_user(
-    model: web::Json<CreateUserDto>,
-    db: web::Data<DbContext>,
-) -> HttpResponse {
-    let user = match UserBuilder::new()
-        .with_username(model.username.to_owned())
-        .with_password(model.password.to_owned())
-        .build()
-    {
+pub async fn create_user(dto: web::Json<CreateUserDto>, db: web::Data<DbContext>) -> HttpResponse {
+    let user = match User::new(dto.0) {
         Ok(user) => user,
         Err(e) => {
             error!("failed to create user: {:?}", e);

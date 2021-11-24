@@ -26,6 +26,9 @@ impl Config {
     }
 
     pub fn database_url(&self) -> String {
-        format!("postgres://{}:{}@{}:{}/{}", self.db_user, self.db_password, self.db_host, self.db_port, self.db_name)
+        format!(
+            "postgres://{}:{}@{}:{}/{}",
+            self.db_user, self.db_password, self.db_host, self.db_port, self.db_name
+        )
     }
 }
