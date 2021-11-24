@@ -1,6 +1,7 @@
+use std::sync::Arc;
+
 use sqlx::postgres::PgQueryResult;
 use sqlx::{Pool, Postgres, Result};
-use std::sync::Arc;
 
 use crate::db::entities::User;
 
@@ -27,7 +28,9 @@ impl UserDao {
     }
 
     pub async fn insert(&self, user: User) -> Result<User> {
-        sqlx::query_as::<_, User>(
+        let mut tx = self.pool.begin().await?;
+
+        let user = sqlx::query_as::<_, User>(
             r#"
             INSERT INTO users (username, password)
             VALUES ($1, $2)
@@ -36,19 +39,50 @@ impl UserDao {
         )
         .bind(user.username)
         .bind(user.password)
-        .fetch_one(self.pool.as_ref())
-        .await
+        .fetch_one(&mut tx)
+        .await?;
+
+        tx.commit().await?;
+
+        Ok(user)
+    }
+
+    pub async fn update(&self, user: User) -> Result<User> {
+        let mut tx = self.pool.begin().await?;
+
+        let user = sqlx::query_as::<_, User>(
+            r#"
+            UPDATE users SET username = $1, password = $2, updated_at = now()
+            WHERE id = $3
+            RETURNING id, username, password, created_at, updated_at
+            "#,
+        )
+        .bind(user.username)
+        .bind(user.password)
+        .bind(user.id)
+        .fetch_one(&mut tx)
+        .await?;
+
+        tx.commit().await?;
+
+        Ok(user)
     }
 
     pub async fn delete(&self, id: &str) -> Result<PgQueryResult> {
-        sqlx::query(
+        let mut tx = self.pool.begin().await?;
+
+        let result = sqlx::query(
             r#"
             UPDATE users SET is_deleted = TRUE, updated_at = now()
             WHERE id::text = $1
             "#,
         )
         .bind(id)
-        .execute(self.pool.as_ref())
-        .await
+        .execute(&mut tx)
+        .await?;
+
+        tx.commit().await?;
+
+        Ok(result)
     }
 }

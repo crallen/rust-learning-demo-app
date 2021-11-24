@@ -17,6 +17,8 @@ pub fn init(cfg: &mut web::ServiceConfig) {
             .service(users::list_users)
             .service(users::show_user)
             .service(users::create_user)
+            .service(users::update_user)
+            .service(users::update_password)
             .service(users::delete_user),
     );
 }
